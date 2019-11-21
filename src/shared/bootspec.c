@@ -757,11 +757,14 @@ int boot_entries_augment_from_loader(BootConfig *config, bool only_auto) {
         STRV_FOREACH(i, found_by_loader) {
                 _cleanup_free_ char *c = NULL, *t = NULL, *p = NULL;
                 char **a, **b;
+                size_t len = strlen(*i);
 
                 if (boot_config_has_entry(config, *i))
                         continue;
 
-                if (only_auto && !startswith(*i, "auto-"))
+                if (!startswith(*i, "auto-") &&
+                    (only_auto || !(endswith(*i, ".conf") ||
+                                    endswith(*i, ".efi"))))
                         continue;
 
                 c = strdup(*i);
